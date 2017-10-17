@@ -1,7 +1,10 @@
 package session
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"sync"
 )
 
@@ -21,4 +24,12 @@ func NewManager(provideName, cookieName string, maxlifetime int64) (*Manager, er
 		provider:    provider,
 		cookieName:  cookieName,
 		maxlifetime: maxlifetime}, nil
+}
+
+func (m *Manager) sessionId() string {
+	b := make([]byte, 32)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		return ""
+	}
+	return base64.URLEncoding.EncodeToString(b)
 }
